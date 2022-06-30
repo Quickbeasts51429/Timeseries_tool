@@ -1,0 +1,107 @@
+<tool id="xarray_timeseries" name="NetCDF xarray timeseries plotting" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" profile="@PROFILE@">
+    <description>Visualize time series of netCDF variables </description>
+    <macros>
+        <import>macros.xml</import>
+        <import>macros_timeseries.xml</import>
+    </macros>
+    <expand macro="edam_ontology"/>
+    <requirements>
+        <requirement type="package" version="@TOOL_VERSION@">xarray</requirement>
+        <requirement type="package" version="3">python</requirement>
+        <requirement type="package" version="1.5.6">netcdf4</requirement>
+        <requirement type="package" version="3.4.2">matplotlib</requirement>
+        <requirement type="package" version="2021.12.0">dask</requirement>
+        <requirement type="package" version="0.13.1">pandas</requirement>
+    </requirements>
+    <command detect_errors="exit_code"><![CDATA[
+    mkdir output_dir &&
+    mkdir -p `pwd`/mlp_tmpdir &&
+    MPLCONFIGDIR=`pwd`/mlp_tmpdir &&
+    echo "Galaxy xarray version @TOOL_VERSION@" > $version &&
+    python '$__tool_directory__/timeseries.py' '$input' '$var'
+    --config '$map_customization'
+    #if $shift
+         --shift
+    #end if
+         --output plot.png
+         --verbose &&
+    mv *.png output_dir
+    ]]></command>
+    <expand macro="config_map"/>
+    <inputs>
+        <param type="data" name="input" label="Input netcdf file" format="netcdf"  help="Select the input netCDF file."/>
+        <param type="data" label="Tabular of variables" name="var_tab" format="tabular" help="Select the tabular file which summarize the available variables and dimensions."/>
+         <param name="axes_xvar" type="select" label="Choose the variable to plot on X-axis">
+            <options from_dataset="var_tab">
+                <column name="name" index="0"/>
+                <column name="value" index="0"/>
+            </options>
+         </param>
+         <param name="axes_yvar" type="select" label="Choose the variable to plot on Y-axis">
+            <options from_dataset="var_tab">
+                <column name="name" index="0"/>
+                <column name="value" index="0"/>
+            </options>
+        </param>
+        <conditional name="condi_datetime">
+            <param name="datetime" type="select" label="Datetime selection" help="Use this option to set the start and end values for plotting.s">
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+            </param>
+            <when value="no"></when>
+            <when value="yes">
+                <param type="data" label="Tabular of time values" name="time_tab" format="tabular" help="File containing time values(for plotting start values.)"/>
+                <param name="time_start_value" type="select" multiple="false" label="Choose the  times to plot">
+                    <options from_dataset="time_tab">
+                        <column name="name" index="1"/>
+                        <column name="value" index="0"/>
+                    </options>
+                </param>
+                <param type="data" label="Tabular of time values" name="time_tab" format="tabular" help="File containing time values(for plotting end values.)"/>
+                <param name="time_end_value" type="select" multiple="false" label="Choose the  times to plot">
+                    <options from_dataset="time_tab">
+                        <column name="name" index="1"/>
+                        <column name="value" index="0"/>
+                    </options>
+                </param>
+            </when>
+        </conditional>
+        <param name="timestep" type="select" optional="true" label="Specify the time series of plot (select according to your dataset)">
+            <option value="Hourly">Hourly</option>
+            <option value="Daily">Daily</option>
+            <option value="Weekly">Weekly</option>
+            <option value="Monthly">Monthly</option>
+            <option value="Annually">Annually</option>
+        </param>
+        
+         <conditional name="condi_area">
+            <param name="area" type="select" label="Area/ Coordinate Selection" help="Select a region : Use this to set geographical features for the plot.">
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+            </param>
+            <when value="no">
+                 <param name="xxlim" type="text" optional="true" label="longitude value for limited geographical area" />
+                 <param name="yylim" type="text" value=""  optional="true" label="latitude value for limited geographical area" />
+            </when>
+            <when value="yes">
+                <param name="xlim" type="text" optional="true" label="longitudes values 'lonW,lonE' for limited geographical area" />
+                <param name="ylim" type="text" value=""  optional="true" label="latitudes values 'latS,latN' for limited geographical area" />
+                <param name="a_red" type="select" value optional="true" label="Specify the reduction operation on the variable over the region">
+                    <option value="mean">Mean</option>
+                    <option value="median">Median</option>
+                    <option value="max">Max</option>
+                    <option value="min">Min</option>
+                </param>
+            </when>
+        </conditional>
+        <param name="range" type="text" optional="true" label="Range of values for plotting e.g. minimum value and maximum value (minval,maxval) (optional, applicable to only to variables)" />
+        <param name="threshold" type="float"  optional="true" label="Do not plot values below this threshold (optional)" />
+        <expand macro="customize_appearance_plots" />
+    </inputs>
+    <outputs>
+        <data name="version" format="tabular" label="Tool version"/>
+        <collection type="list" name="output_dir" label="TimeSeries plots">
+            <discover_datasets pattern="__name_and_ext__" directory="output_dir"/>
+        </collection>
+    </outputs>
+    
