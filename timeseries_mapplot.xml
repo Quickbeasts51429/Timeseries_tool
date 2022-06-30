@@ -73,7 +73,16 @@
             <option value="Monthly">Monthly</option>
             <option value="Annually">Annually</option>
         </param>
-        
+         <param name="lat_dim" type="select" label="Name of latitude coordinate" >
+            <options from_dataset="var_tab">
+                <column name="value" index="0"/>
+            </options>
+        </param>
+        <param name="lon_dim" type="select" label="Name of longitude coordinate" >
+            <options from_dataset="var_tab">
+                <column name="value" index="0"/>
+            </options>
+        </param>
          <conditional name="condi_area">
             <param name="area" type="select" label="Area/ Coordinate Selection" help="Select a region : Use this to set geographical features for the plot.">
                 <option value="no">No</option>
