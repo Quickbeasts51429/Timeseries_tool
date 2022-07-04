@@ -1,80 +1,22 @@
 <macros>
-    <xml name="config_map">
+    <xml name="config_series">
         <configfiles>
-            <configfile name="map_customization"><![CDATA[
+            <configfile name="series_customization"><![CDATA[
 {
 #if $condi_datetime.datetime=="yes"
-"time_start_value": "$condi_datetime.time_start_value ",
+"start_time":"$condi_datetime.time_start_value",
+"end_time":"$condi_datetime.time_end_value",
 #end if
-#if $condi_datetime.datetime=="no"
-"time_start_value": "$condi_datetime.time_end_value ",
+#if $xlim
+"xlim":'$xlim',
 #end if
-#if $condi_area.area=="no"
-"xlim":"$condi_area.xlim" ,
-#end if
-#if $condi_area.area=="no"
-"ylim":"$condi_area.ylim" ,
-#end if
-#if $condi_area.area=="yes"
-"xxlim":"$condi_area.xxlim" ,
-#end if
-#if $condi_area.area=="yes"
-"yylim":"$condi_area.yylim" ,
-#end if
-#if $title
-"title":"$title",
-#end if
-#if $threshold
-"threshold":'$threshold',
-#end if
-#if $range
-"range":'$range',
-#end if
-#if $x_label
-"x_label":'$x_label',
-#end if
-#if $y_label
-"y_label":'$y_label',
+#if $ylim
+"ylim":'$ylim',
 #end if
 }
             ]]>
             </configfile>
-           
         </configfiles>
+   
     </xml>
-    <xml name="customize_appearance_plots">
-        <param name="linestyle" type="select" optional="true" label="Specify which linestyle to use for plotting (optional)">
-            <option value="solid">Solid</option>
-            <option value="dashed">Dashed</option>
-            <option value="dashdot">Dash dot</option>
-            <option value="dotted">Dotted</option>
-        </param>
-        <param name="marker" type="select" optional="true" label="Specify which marker style to use for plotting (optional)">
-            <option value=".">Point</option>
-            <option value="o">Circle</option>
-            <option value=",">Pixel</option>
-            <option value="v">Triangle_Down</option>
-            <option value="^">Triangle_Up</option>
-            <option value="<">Triangle_Left</option>
-            <option value=">">Triangle_Right</option>
-            <option value="1">Tri_Down</option>
-            <option value="2">Tri_Up</option>
-            <option value="3">Tri_Left</option>
-            <option value="4">Tri_Right</option>
-            <option value="s">Square</option>
-            <option value="p">Pentagon</option>
-            <option value="*">Star</option>
-            <option value="h">Hexagon 1</option>
-            <option value="H">Hexagon 2</option>
-            <option value="+">Plus</option>
-            <option value="x">x marker</option>
-            <option value="D">Diamond</option>
-            <option value="d">Thin diamond</option>
-            <option value="|">Vline</option>
-            <option value="_">h_line</option>
-        </param>
-        <param name="x_label" type="text" optional="true" label="Set a X - label for timeseries (optional)" />
-        <param name="y_label" type="text" optional="true" label="Set a Y - label for timeseries (optional)" />
-        <param name="title" type="text" optional="true" label="Specify plot title (optional)" />
-        </xml>
 </macros>
